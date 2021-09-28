@@ -43,7 +43,7 @@ export class AuthService {
         {
           user: user,
         },
-        'success',
+        'Successfully Registered',
       );
     } catch (err) {
       throw new HttpException(
@@ -55,7 +55,7 @@ export class AuthService {
 
   validatePayload(payload: JwtPayload) {
     return this.prisma.user.findUnique({
-      where: { id: payload.userId, email: payload.email },
+      where: { id: payload.userId },
     });
   }
 
@@ -97,7 +97,7 @@ export class AuthService {
           user: user,
           access_token: access_token,
         },
-        'success',
+        'Verified User',
       );
     } catch (err) {
       throw new HttpException(

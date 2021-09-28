@@ -16,12 +16,18 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `Profile` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `bio` VARCHAR(191) NOT NULL,
     `userId` INTEGER NOT NULL,
+    `bio` TEXT NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `address` TEXT NOT NULL,
+    `city` VARCHAR(191) NOT NULL,
+    `country` VARCHAR(191) NOT NULL,
+    `stripeCustomerId` VARCHAR(191),
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3),
 
+    INDEX `Profile_userId_idx`(`userId`),
     UNIQUE INDEX `Profile_userId_unique`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
