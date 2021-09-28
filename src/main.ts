@@ -1,5 +1,5 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { ClassValidatorExceptionsFilter } from './shared/class-validator-exception.filter';

@@ -1,10 +1,4 @@
-import {
-  IsNotEmpty,
-  IsEmail,
-  IsString,
-  Matches,
-  IsDate,
-} from 'class-validator';
+import { IsNotEmpty, IsEmail, IsString, Matches } from 'class-validator';
 import { Match } from 'src/shared/decorators/match.decorator';
 
 export class SignUpUserDto {

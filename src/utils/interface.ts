@@ -8,3 +8,13 @@ export interface JwtPayload {
   userId: number;
   role: string;
 }
+
+export interface StripeCardDetails {
+  cardName: string;
+  cardId: string;
+  cardExpiryMonth: number;
+  cardExpiryYear: number;
+  cardLast4: string;
+  cardBrand: string;
+  cardDefault: boolean;
+}
