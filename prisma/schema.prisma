@@ -10,18 +10,36 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id               Int        @id @default(autoincrement())
-  email            String     @unique
-  name             String
-  password         String
-  role             Role       @default(USER)
-  stripeCustomerId String?
-  profile          Profile?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  deletedAt        DateTime?
-  UserCard         UserCard[]
+model Book {
+  id            Int       @id @default(autoincrement())
+  title         String
+  sellingPrice  Decimal   @db.Decimal(10, 2)
+  originalPrice Decimal   @db.Decimal(10, 2)
+  isbn          String
+  publisher     String
+  author        String
+  language      String
+  user          User      @relation(fields: [sellerId], references: [id])
+  sellerId      Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  bookMedia BookMedia[]
+  @@unique([isbn])
+  @@index([sellerId])
+}
+
+model BookMedia {
+  id        Int       @id @default(autoincrement())
+  media     String
+  book      Book      @relation(fields: [bookId], references: [id])
+  bookId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([bookId])
 }
 
 model Profile {
@@ -38,6 +56,21 @@ model Profile {
   deletedAt DateTime?
 
   @@index([userId])
+}
+
+model User {
+  id               Int        @id @default(autoincrement())
+  email            String     @unique
+  name             String
+  password         String
+  role             Role       @default(USER)
+  stripeCustomerId String?
+  profile          Profile?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  deletedAt        DateTime?
+  UserCard         UserCard[]
+  book             Book[]
 }
 
 model UserCard {
