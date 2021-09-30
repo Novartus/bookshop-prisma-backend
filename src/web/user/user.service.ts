@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   BadRequestException,
   HttpException,
   HttpStatus,
@@ -8,7 +9,12 @@ import { includes, map } from 'lodash';
 import { Profile, User, UserCard } from '.prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import Stripe from 'src/utils/Stripe';
-import { AddCardDto, DeleteCardDto, UpdateCardDto } from 'src/dto/payment.dto';
+import {
+  AddCardDto,
+  DeleteCardDto,
+  MakeDefaultCardDto,
+  UpdateCardDto,
+} from 'src/dto/payment.dto';
 import { UpdateProfileDto } from 'src/dto/user.dto';
 import { GlobalResponseType, ResponseMap } from 'src/utils/type';
 import { StripeCardDetails } from 'src/utils/interface';
@@ -362,6 +368,48 @@ export class UserService {
       throw new HttpException(
         error,
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async makeDefaultCard(
+    user: User,
+    makeDefaultCardDto: MakeDefaultCardDto,
+  ): GlobalResponseType {
+    try {
+      const userData = await this.prisma.user.findUnique({
+        where: { id: user.id },
+      });
+
+      if (!userData.stripeCustomerId) {
+        throw new BadGatewayException('No Stripe ID found');
+      }
+
+      const userCard = await this.prisma.userCard.findFirst({
+        where: {
+          cardId: makeDefaultCardDto.cardId,
+          deletedAt: null,
+        },
+      });
+
+      if (!userCard) {
+        throw new BadRequestException('No card found to make default');
+      }
+
+      await Stripe.customers.update(userData.stripeCustomerId, {
+        default_source: makeDefaultCardDto.cardId,
+      });
+
+      return ResponseMap(
+        {
+          default: true,
+        },
+        'Successfully updated default card',
+      );
+    } catch (err) {
+      throw new HttpException(
+        err,
+        err.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

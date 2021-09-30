@@ -11,7 +11,12 @@ import { User as UserEntity } from '.prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { User } from 'src/shared/decorators/user.decorator';
 import { UpdateProfileDto } from 'src/dto/user.dto';
-import { AddCardDto, DeleteCardDto, UpdateCardDto } from 'src/dto/payment.dto';
+import {
+  AddCardDto,
+  DeleteCardDto,
+  MakeDefaultCardDto,
+  UpdateCardDto,
+} from 'src/dto/payment.dto';
 import { GlobalResponseType } from 'src/utils/type';
 import { UserService } from './user.service';
 
@@ -65,5 +70,14 @@ export class UserController {
     @Body() deleteCardDto: DeleteCardDto,
   ): GlobalResponseType {
     return await this.userService.deleteCard(user, deleteCardDto);
+  }
+
+  @Patch('default/card')
+  @UseGuards(JwtAuthGuard)
+  async makeDefaultCard(
+    @User() user: UserEntity,
+    @Body() makeDefaultCardDto: MakeDefaultCardDto,
+  ): GlobalResponseType {
+    return await this.userService.makeDefaultCard(user, makeDefaultCardDto);
   }
 }

@@ -29,6 +29,12 @@ export class CardDto {
   cardExpiryYear: number;
 }
 
+export class CardIdDto {
+  @IsNotEmpty()
+  @IsString()
+  cardId: string;
+}
+
 export class AddCardDto extends CardDto {
   @IsNotEmpty()
   @IsNumberString()
@@ -42,8 +48,6 @@ export class UpdateCardDto extends CardDto {
   cardId: string;
 }
 
-export class DeleteCardDto {
-  @IsNotEmpty()
-  @IsString()
-  cardId: string;
-}
+export class DeleteCardDto extends CardIdDto {}
+
+export class MakeDefaultCardDto extends CardIdDto {}
