@@ -107,8 +107,12 @@ export class BookService {
           id: parseInt(id) ? parseInt(id) : 0,
           deletedAt: null,
         },
-        include: {
-          bookMedia: true,
+        select: {
+          bookMedia: {
+            where: {
+              deletedAt: null,
+            },
+          },
         },
       });
 
@@ -167,8 +171,12 @@ export class BookService {
           author: updateSellingBookDto.author,
           language: updateSellingBookDto.language,
         },
-        include: {
-          bookMedia: true,
+        select: {
+          bookMedia: {
+            where: {
+              deletedAt: null,
+            },
+          },
         },
       });
 
