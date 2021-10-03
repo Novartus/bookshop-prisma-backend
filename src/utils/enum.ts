@@ -10,3 +10,17 @@ export enum FILE_TYPE {
 export enum FILE_PATH {
   newBook = 'upload/book',
 }
+
+export enum BOOK_BUY_STATUS {
+  AVAILABLE = 'AVAILABLE',
+  SOLD = 'SOLD',
+}
+
+export enum STRIPE_CURRENCY {
+  USD = 'usd',
+}
+
+export enum TRANSACTION_STATUS {
+  SUCCEEDED = 'SUCCEEDED',
+  FAILURE = 'FAILURE',
+}

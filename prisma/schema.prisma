@@ -11,21 +11,23 @@ generator client {
 }
 
 model Book {
-  id            Int       @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   title         String
-  sellingPrice  Decimal   @db.Decimal(10, 2)
-  originalPrice Decimal   @db.Decimal(10, 2)
+  sellingPrice  Decimal       @db.Decimal(10, 2)
+  originalPrice Decimal       @db.Decimal(10, 2)
   isbn          String
   publisher     String
   author        String
   language      String
-  user          User      @relation(fields: [sellerId], references: [id])
+  user          User          @relation(fields: [sellerId], references: [id])
   sellerId      Int
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  status        BookBuyStatus @default(AVAILABLE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
 
-  bookMedia BookMedia[]
+  bookMedia   BookMedia[]
+  Transaction Transaction[]
   @@unique([isbn])
   @@index([sellerId])
 }
@@ -58,19 +60,37 @@ model Profile {
   @@index([userId])
 }
 
+model Transaction {
+  id                Int               @id @default(autoincrement())
+  user              User              @relation(fields: [buyerId], references: [id])
+  buyerId           Int
+  book              Book              @relation(fields: [bookId], references: [id])
+  bookId            Int
+  transactionID     String            @db.Text /// Stripe Transaction ID
+  transactionStatus TransactionStatus
+  remarks           String?           @db.Text /// Stripe Transaction ID
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
+
+  @@index([buyerId])
+}
+
 model User {
-  id               Int        @id @default(autoincrement())
-  email            String     @unique
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
   name             String
   password         String
-  role             Role       @default(USER)
+  role             Role      @default(USER)
   stripeCustomerId String?
   profile          Profile?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
   deletedAt        DateTime?
-  UserCard         UserCard[]
-  book             Book[]
+
+  UserCard    UserCard[]
+  book        Book[]
+  Transaction Transaction[]
 }
 
 model UserCard {
@@ -86,4 +106,14 @@ model UserCard {
 enum Role {
   USER
   ADMIN
+}
+
+enum TransactionStatus {
+  SUCCEEDED
+  FAILURE
+}
+
+enum BookBuyStatus {
+  AVAILABLE
+  SOLD
 }
