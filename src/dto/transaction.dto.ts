@@ -1,4 +1,13 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
+import { PaginationDto } from './pagination.dto';
+import { TRANSACTION_STATUS } from 'src/utils/enum';
 
 export class BuyBookDto {
   @IsNotEmpty()
@@ -9,4 +18,11 @@ export class BuyBookDto {
   @IsNotEmpty()
   @IsString()
   cardId: string;
+}
+
+export class ViewTransactionDto extends PaginationDto {
+  @IsOptional()
+  @IsString()
+  @IsEnum(TRANSACTION_STATUS)
+  transactionStatus: string;
 }

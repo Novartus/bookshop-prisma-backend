@@ -7,7 +7,7 @@ import {
 import Stripe from 'src/utils/Stripe';
 import { User } from '.prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { BuyBookDto } from 'src/dto/transaction.dto';
+import { BuyBookDto, ViewTransactionDto } from 'src/dto/transaction.dto';
 import { GlobalResponseType, ResponseMap } from 'src/utils/type';
 import {
   BOOK_BUY_STATUS,
@@ -66,6 +66,45 @@ export class TransactionService {
           transaction: transaction,
         },
         'Transaction Successfully',
+      );
+    } catch (error) {
+      throw new HttpException(
+        error,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async viewTransactions(
+    user: User,
+    viewTransactionDto: ViewTransactionDto,
+  ): GlobalResponseType {
+    try {
+      const take = viewTransactionDto.limit;
+      const pageNo = viewTransactionDto.page;
+      const skip = (pageNo - 1) * take;
+      const queryFilter: any = {
+        where: {
+          buyerId: user.id,
+          deletedAt: null,
+        },
+        skip: skip,
+        take: take,
+      };
+
+      if (viewTransactionDto.transactionStatus) {
+        queryFilter.where.transactionStatus =
+          viewTransactionDto.transactionStatus;
+      }
+      const transactions = await this.prisma.transaction.findMany({
+        ...queryFilter,
+      });
+
+      return ResponseMap(
+        {
+          transaction: transactions,
+        },
+        'Transaction List Success',
       );
     } catch (error) {
       throw new HttpException(
