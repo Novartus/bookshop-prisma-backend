@@ -25,4 +25,12 @@ export class ViewTransactionDto extends PaginationDto {
   @IsString()
   @IsEnum(TRANSACTION_STATUS)
   transactionStatus: string;
+
+  @IsOptional()
+  @IsString()
+  bookTitle: string;
+
+  @IsOptional()
+  @IsString()
+  sellerName: string;
 }

@@ -84,9 +84,26 @@ export class TransactionService {
       const pageNo = viewTransactionDto.page;
       const skip = (pageNo - 1) * take;
       const queryFilter: any = {
+        select: {
+          // book: true,
+          book: {
+            include: {
+              bookMedia: true,
+              user: true,
+            },
+          },
+          deletedAt: true,
+          buyerId: true,
+        },
         where: {
           buyerId: user.id,
           deletedAt: null,
+          book: {
+            deletedAt: null,
+            user: {
+              deletedAt: null,
+            },
+          },
         },
         skip: skip,
         take: take,
@@ -96,9 +113,15 @@ export class TransactionService {
         queryFilter.where.transactionStatus =
           viewTransactionDto.transactionStatus;
       }
-      const transactions = await this.prisma.transaction.findMany({
-        ...queryFilter,
-      });
+      if (viewTransactionDto.bookTitle) {
+        queryFilter.where.book.title.contains = viewTransactionDto.bookTitle;
+      }
+      if (viewTransactionDto.sellerName) {
+        queryFilter.where.book.user.name.contains =
+          viewTransactionDto.sellerName;
+      }
+
+      const transactions = await this.prisma.transaction.findMany(queryFilter);
 
       return ResponseMap(
         {
