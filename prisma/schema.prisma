@@ -28,6 +28,7 @@ model Book {
 
   bookMedia   BookMedia[]
   Transaction Transaction[]
+  Cart        Cart[]
   @@unique([isbn])
   @@index([sellerId])
 }
@@ -35,6 +36,19 @@ model Book {
 model BookMedia {
   id        Int       @id @default(autoincrement())
   media     String
+  book      Book      @relation(fields: [bookId], references: [id])
+  bookId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([bookId])
+}
+
+model Cart {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
   book      Book      @relation(fields: [bookId], references: [id])
   bookId    Int
   createdAt DateTime  @default(now())
@@ -91,6 +105,7 @@ model User {
   UserCard    UserCard[]
   book        Book[]
   Transaction Transaction[]
+  Cart        Cart[]
 }
 
 model UserCard {
