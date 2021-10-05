@@ -29,6 +29,7 @@ model Book {
   bookMedia   BookMedia[]
   Transaction Transaction[]
   Cart        Cart[]
+
   @@unique([isbn])
   @@index([sellerId])
 }
