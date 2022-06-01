@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  development:
+    container_name: backend_dev
+    build:
+      context: .
+      target: production
+      dockerfile: ./Dockerfile
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+      - 5050:5050
+    depends_on:
+      - mysqldb
+    env_file: ./.env
+    environment:
+      DB_HOST: $DB_HOST
+      DB_USER: $DB_USER
+      DB_PASS: $DB_PASS
+      DB_NAME: $DB_NAME
+      DB_PORT: $MYSQL_LOCAL_PORT
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+
+  testing:
+    container_name: backend_test
+    build:
+      context: .
+      target: test
+      dockerfile: ./Dockerfile
+    command: npm run test
+    ports:
+      - 9090:9090
+      - 9091:9091
+    depends_on:
+      - mysqldb
+    env_file: ./.env
+    environment:
+      DB_HOST: $DB_HOST
+      DB_USER: $DB_USER
+      DB_PASS: $DB_PASS
+      DB_NAME: $DB_NAME
+      DB_PORT: $MYSQL_DOCKER_PORT
+
+  # prod:
+  #   container_name: backend_prod
+  #   build:
+  #     context: .
+  #     target: production
+  #     dockerfile: ./Dockerfile
+  #   command: npm run start:prod
+  #   ports:
+  #     - 3000:3000
+  #     - 5050:5050
+  #   depends_on:
+  #     - mysqldb
+  #   environment:
+  #     MYSQL_HOST: mysqldb
+  #   networks:
+  #     - nesjs-network
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   restart: unless-stopped
+
+  mysqldb:
+    container_name: backend_database
+    image: mysql
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      MYSQL_HOST: $DB_HOST
+      MYSQL_ROOT_PASSWORD: $DB_PASS
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_TCP_PORT: $MYSQL_DOCKER_PORT
+    ports:
+      - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+    volumes:
+      - mysql:/var/lib/mysql
+      - mysql_config:/etc/mysql
+
+  phpmyadmin:
+    container_name: backend_phpmyadmin
+    image: phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - mysqldb
+    environment:
+      PMA_HOST: mysqldb
+    ports:
+      - '$PHP_MY_ADMIN_PORT:80'
+
+volumes:
+  mysql:
+  mysql_config:
